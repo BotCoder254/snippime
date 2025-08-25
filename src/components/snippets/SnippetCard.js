@@ -6,9 +6,12 @@ import {
   HiEye,
   HiCode,
   HiCalendar,
-  HiTag
+  HiTag,
+  HiDuplicate
 } from 'react-icons/hi';
 import { getLanguageColor, formatDate } from '../../utils/helpers';
+import VoteButtons from './VoteButtons';
+import ForkButton from './ForkButton';
 
 const SnippetCard = ({ snippet, onClick, index = 0, highlighted }) => {
   const [isLiked, setIsLiked] = useState(false);
@@ -60,18 +63,38 @@ const SnippetCard = ({ snippet, onClick, index = 0, highlighted }) => {
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1 min-w-0">
-          <h3 
-            className="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"
-            dangerouslySetInnerHTML={{ 
-              __html: highlighted?.highlightedTitle || snippet.title 
-            }}
-          />
-          <p 
-            className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2 leading-relaxed"
-            dangerouslySetInnerHTML={{ 
-              __html: highlighted?.highlightedDescription || snippet.description 
-            }}
-          />
+          <div className="flex items-start space-x-3">
+            <div className="flex-1">
+              <h3 
+                className="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"
+                dangerouslySetInnerHTML={{ 
+                  __html: highlighted?.highlightedTitle || snippet.title 
+                }}
+              />
+              {snippet.forkOf && (
+                <div className="flex items-center space-x-1 text-xs text-gray-500 dark:text-gray-400 mb-2">
+                  <HiDuplicate className="w-3 h-3" />
+                  <span>Forked from @{snippet.originalOwnerName}/{snippet.originalTitle}</span>
+                </div>
+              )}
+              <p 
+                className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2 leading-relaxed"
+                dangerouslySetInnerHTML={{ 
+                  __html: highlighted?.highlightedDescription || snippet.description 
+                }}
+              />
+            </div>
+            
+            {/* Voting */}
+            <div onClick={(e) => e.stopPropagation()}>
+              <VoteButtons 
+                snippetId={snippet.id}
+                initialScore={snippet.score || 0}
+                initialVoteCounts={snippet.voteCounts || { up: 0, down: 0 }}
+                size="sm"
+              />
+            </div>
+          </div>
         </div>
 
         <div className="flex items-center space-x-2 ml-4">
@@ -163,9 +186,12 @@ const SnippetCard = ({ snippet, onClick, index = 0, highlighted }) => {
         </div>
 
         <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-1">
-            <HiHeart className="w-4 h-4" />
-            <span>{snippet.likesCount || 0}</span>
+          <div onClick={(e) => e.stopPropagation()}>
+            <ForkButton 
+              snippet={snippet} 
+              size="sm" 
+              showLabel={false}
+            />
           </div>
 
           <div className="flex items-center space-x-1">

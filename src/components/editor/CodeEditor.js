@@ -50,7 +50,7 @@ const CodeEditor = ({
         },
         '.cm-content': {
           padding: '16px',
-          minHeight: '200px'
+          minHeight: '100%'
         },
         '.cm-focused': {
           outline: 'none'
@@ -105,10 +105,10 @@ const CodeEditor = ({
   }, [value]);
 
   return (
-    <div className="relative">
+    <div className="relative h-full">
       <div 
         ref={editorRef}
-        className="border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden bg-white dark:bg-gray-800"
+        className="h-full border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden bg-white dark:bg-gray-800"
       />
       {!value && !readOnly && (
         <div className="absolute top-4 left-4 text-gray-400 dark:text-gray-500 pointer-events-none font-mono text-sm">

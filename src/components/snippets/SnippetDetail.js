@@ -11,10 +11,13 @@ import {
   HiShare,
   HiPencil,
   HiTrash,
-  HiClock
+  HiClock,
+  HiDuplicate
 } from 'react-icons/hi';
 import { useAuth } from '../../hooks/useAuth';
 import VersionHistory from './VersionHistory';
+import VoteButtons from './VoteButtons';
+import ForkButton from './ForkButton';
 const SnippetDetail = ({ snippet, isOpen, onClose, embedded = false }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
@@ -199,6 +202,17 @@ const SnippetDetail = ({ snippet, isOpen, onClose, embedded = false }) => {
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
                 {snippet.title}
               </h1>
+              
+              {/* Fork Attribution */}
+              {snippet.forkOf && (
+                <div className="flex items-center space-x-2 mb-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                  <HiDuplicate className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  <span className="text-sm text-blue-700 dark:text-blue-300">
+                    Forked from <span className="font-medium">@{snippet.originalOwnerName}/{snippet.originalTitle}</span>
+                  </span>
+                </div>
+              )}
+              
               <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
                 {snippet.description}
               </p>
@@ -276,6 +290,21 @@ const SnippetDetail = ({ snippet, isOpen, onClose, embedded = false }) => {
               </div>
 
               <div className="flex items-center space-x-2">
+                {/* Voting */}
+                <VoteButtons 
+                  snippetId={snippet.id}
+                  initialScore={snippet.score || 0}
+                  initialVoteCounts={snippet.voteCounts || { up: 0, down: 0 }}
+                  size="md"
+                />
+
+                {/* Fork Button */}
+                <ForkButton 
+                  snippet={snippet}
+                  size="md"
+                  showLabel={true}
+                />
+
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -416,6 +445,17 @@ const SnippetDetail = ({ snippet, isOpen, onClose, embedded = false }) => {
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
                   {snippet.title}
                 </h1>
+                
+                {/* Fork Attribution - Mobile */}
+                {snippet.forkOf && (
+                  <div className="flex items-center space-x-2 mb-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <HiDuplicate className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    <span className="text-sm text-blue-700 dark:text-blue-300">
+                      Forked from <span className="font-medium">@{snippet.originalOwnerName}/{snippet.originalTitle}</span>
+                    </span>
+                  </div>
+                )}
+                
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
                   {snippet.description}
                 </p>
@@ -493,6 +533,21 @@ const SnippetDetail = ({ snippet, isOpen, onClose, embedded = false }) => {
                 </div>
 
                 <div className="flex items-center space-x-2">
+                  {/* Mobile Voting */}
+                  <VoteButtons 
+                    snippetId={snippet.id}
+                    initialScore={snippet.score || 0}
+                    initialVoteCounts={snippet.voteCounts || { up: 0, down: 0 }}
+                    size="sm"
+                  />
+
+                  {/* Mobile Fork Button */}
+                  <ForkButton 
+                    snippet={snippet}
+                    size="sm"
+                    showLabel={false}
+                  />
+
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -535,6 +590,48 @@ const SnippetDetail = ({ snippet, isOpen, onClose, embedded = false }) => {
             </div>
           </div>
         </motion.div>
+
+        {/* Mobile Sticky Action Bar */}
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 z-50">
+          <div className="flex items-center justify-between max-w-sm mx-auto">
+            <VoteButtons 
+              snippetId={snippet.id}
+              initialScore={snippet.score || 0}
+              initialVoteCounts={snippet.voteCounts || { up: 0, down: 0 }}
+              size="lg"
+            />
+            
+            <div className="flex items-center space-x-3">
+              <ForkButton 
+                snippet={snippet}
+                size="lg"
+                showLabel={false}
+              />
+              
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleShare}
+                className="p-3 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              >
+                <HiShare className="w-6 h-6" />
+              </motion.button>
+              
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleSave}
+                className={`p-3 rounded-lg transition-colors ${
+                  isSaved 
+                    ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400' 
+                    : 'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                }`}
+              >
+                <HiBookmark className="w-6 h-6" />
+              </motion.button>
+            </div>
+          </div>
+        </div>
 
         {/* Version History Modal */}
         <VersionHistory

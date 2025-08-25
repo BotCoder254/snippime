@@ -4,13 +4,22 @@ import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
-  // Replace with your Firebase config
-  apiKey: "your-api-key",
-  authDomain: "your-project.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "your-app-id"
+  apiKey: "AIzaSyBMjKssyRSZJ16EhSdVOFd2XjIkj8_BT-E",
+
+  authDomain: "twitterclone-47ebf.firebaseapp.com",
+
+  databaseURL: "https://twitterclone-47ebf-default-rtdb.firebaseio.com",
+
+  projectId: "twitterclone-47ebf",
+
+  storageBucket: "twitterclone-47ebf.appspot.com",
+
+  messagingSenderId: "700556014223",
+
+  appId: "1:700556014223:web:a0646158ade0b1e55ab6fa",
+
+  measurementId: "G-0WGJF9H0EL"
+
 };
 
 const app = initializeApp(firebaseConfig);

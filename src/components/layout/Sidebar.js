@@ -85,7 +85,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       <motion.div
         variants={sidebarVariants}
         animate={isOpen ? 'open' : 'closed'}
-        className="fixed left-0 top-0 h-full bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 z-50 lg:relative lg:z-auto"
+        className="fixed left-0 top-0 h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 z-50 lg:sticky lg:top-0 lg:h-screen lg:z-auto"
       >
         <div className="flex flex-col h-full">
           {/* Header */}
@@ -194,16 +194,17 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                       <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
                         {user.displayName || user.email}
                       </p>
-                      <button
-                        onClick={logout}
-                        className="flex items-center space-x-1 text-xs text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
-                      >
-                        <HiLogout className="w-3 h-3" />
-                        <span>Logout</span>
-                      </button>
                     </motion.div>
                   )}
                 </AnimatePresence>
+                {/* Logout button - always visible */}
+                <button
+                  onClick={logout}
+                  className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                  title="Logout"
+                >
+                  <HiLogout className="w-4 h-4" />
+                </button>
               </div>
             </div>
           )}
