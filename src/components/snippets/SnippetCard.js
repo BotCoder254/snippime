@@ -10,7 +10,7 @@ import {
 } from 'react-icons/hi';
 import { getLanguageColor, formatDate } from '../../utils/helpers';
 
-const SnippetCard = ({ snippet, onClick, index = 0 }) => {
+const SnippetCard = ({ snippet, onClick, index = 0, highlighted }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
 
@@ -60,12 +60,18 @@ const SnippetCard = ({ snippet, onClick, index = 0 }) => {
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-            {snippet.title}
-          </h3>
-          <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2 leading-relaxed">
-            {snippet.description}
-          </p>
+          <h3 
+            className="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"
+            dangerouslySetInnerHTML={{ 
+              __html: highlighted?.highlightedTitle || snippet.title 
+            }}
+          />
+          <p 
+            className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2 leading-relaxed"
+            dangerouslySetInnerHTML={{ 
+              __html: highlighted?.highlightedDescription || snippet.description 
+            }}
+          />
         </div>
 
         <div className="flex items-center space-x-2 ml-4">

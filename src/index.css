@@ -109,3 +109,25 @@
   background-size: 200px 100%;
   animation: shimmer 1.5s infinite;
 }
+
+/* Masonry Grid */
+.masonry-grid {
+  column-gap: 1.5rem;
+}
+
+.masonry-grid > * {
+  break-inside: avoid;
+  margin-bottom: 1.5rem;
+}
+
+/* Search highlighting */
+mark {
+  @apply bg-yellow-200 dark:bg-yellow-800 px-1 rounded;
+}
+
+/* Mobile responsive masonry */
+@media (max-width: 768px) {
+  .masonry-grid {
+    columns: 1 !important;
+  }
+}
