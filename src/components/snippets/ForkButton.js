@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { HiDuplicate } from 'react-icons/hi';
+import { HiDuplicate, HiCheck } from 'react-icons/hi';
 import { useAuth } from '../../hooks/useAuth';
 import { db } from '../../config/firebase';
-import { collection, addDoc, serverTimestamp, doc, getDoc } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, getDoc, updateDoc, increment } from 'firebase/firestore';
 
 const ForkButton = ({ snippet, onFork, size = 'md', showLabel = true }) => {
   const { user } = useAuth();
   const [isForking, setIsForking] = useState(false);
+  const [forked, setForked] = useState(false);
 
   const sizeClasses = {
     sm: 'w-4 h-4',
@@ -27,7 +28,7 @@ const ForkButton = ({ snippet, onFork, size = 'md', showLabel = true }) => {
       return;
     }
 
-    if (isForking) return;
+    if (isForking || forked) return;
 
     setIsForking(true);
 
@@ -60,8 +61,13 @@ const ForkButton = ({ snippet, onFork, size = 'md', showLabel = true }) => {
       const docRef = await addDoc(collection(db, 'snippets'), forkedSnippet);
 
       // Update original snippet's fork count
-      // Note: In a real app, you'd want to use a transaction or cloud function
-      // to ensure consistency
+      try {
+        await updateDoc(doc(db, 'snippets', snippet.id), {
+          forkCount: increment(1)
+        });
+      } catch (updateError) {
+        console.warn('Could not update fork count:', updateError);
+      }
 
       if (onFork) {
         onFork({
@@ -71,8 +77,14 @@ const ForkButton = ({ snippet, onFork, size = 'md', showLabel = true }) => {
         });
       }
 
-      // Show success message or navigate to editor
-      alert('Snippet forked! You can now edit it before publishing.');
+      setForked(true);
+
+      // Show success and navigate to editor
+      setTimeout(() => {
+        if (window.confirm('Snippet forked successfully! Would you like to edit it now?')) {
+          window.location.href = `/create?fork=${docRef.id}`;
+        }
+      }, 500);
 
     } catch (error) {
       console.error('Error forking snippet:', error);
@@ -87,15 +99,23 @@ const ForkButton = ({ snippet, onFork, size = 'md', showLabel = true }) => {
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       onClick={handleFork}
-      disabled={isForking}
-      className={`${buttonSizeClasses[size]} flex items-center space-x-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors ${
-        isForking ? 'opacity-50 cursor-not-allowed' : ''
+      disabled={isForking || forked}
+      className={`${buttonSizeClasses[size]} flex items-center space-x-2 rounded-lg transition-colors ${
+        forked 
+          ? 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400'
+          : 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30'
+      } ${
+        isForking || forked ? 'opacity-75 cursor-not-allowed' : ''
       }`}
     >
-      <HiDuplicate className={sizeClasses[size]} />
+      {forked ? (
+        <HiCheck className={sizeClasses[size]} />
+      ) : (
+        <HiDuplicate className={sizeClasses[size]} />
+      )}
       {showLabel && (
         <span className="font-medium">
-          {isForking ? 'Forking...' : 'Fork'}
+          {forked ? 'Forked' : isForking ? 'Forking...' : 'Fork'}
         </span>
       )}
     </motion.button>

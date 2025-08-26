@@ -60,7 +60,7 @@ const CollectionCard = ({ collection, onClick, onEdit, onDelete, index = 0 }) =>
         transition: { type: 'spring', stiffness: 300, damping: 30 }
       }}
       onClick={() => onClick(collection)}
-      className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 cursor-pointer hover:shadow-lg dark:hover:shadow-2xl transition-all duration-200 group relative overflow-hidden"
+      className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 cursor-pointer hover:shadow-lg dark:hover:shadow-2xl transition-all duration-200 group relative overflow-hidden h-full flex flex-col"
     >
       {/* Cover Image or Placeholder */}
       <div className="aspect-video bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg mb-4 flex items-center justify-center relative overflow-hidden">
@@ -134,7 +134,7 @@ const CollectionCard = ({ collection, onClick, onEdit, onDelete, index = 0 }) =>
       </div>
 
       {/* Stats */}
-      <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+      <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 flex-shrink-0 mt-auto">
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-1">
             <HiCollection className="w-4 h-4" />

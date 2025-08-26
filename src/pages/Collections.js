@@ -250,7 +250,7 @@ const Collections = () => {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {[...Array(8)].map((_, i) => (
-              <LoadingSkeleton key={i} className="h-64" />
+              <LoadingSkeleton key={i} />
             ))}
           </div>
         ) : filteredAndSortedCollections.length === 0 ? (

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     HiX,
@@ -8,20 +8,24 @@ import {
     HiUpload,
     HiArrowsExpand,
     HiMinusSm,
-    HiDuplicate
+    HiDuplicate,
+    HiPencil
 } from 'react-icons/hi';
 import { useAuth } from '../../hooks/useAuth';
 import { db } from '../../config/firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { LANGUAGES } from '../../utils/constants';
 import CodeEditor from '../editor/CodeEditor';
 import TagInput from '../common/TagInput';
 
-const CreateSnippet = ({ isOpen, onClose, onSuccess }) => {
+const CreateSnippet = ({ isOpen, onClose, onSuccess, forkId = null, editId = null }) => {
     const [activeTab, setActiveTab] = useState('editor');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [editorExpanded, setEditorExpanded] = useState(false);
+    const [isFork, setIsFork] = useState(false);
+    const [isEdit, setIsEdit] = useState(false);
+    const [originalSnippet, setOriginalSnippet] = useState(null);
     const { user } = useAuth();
 
     const [formData, setFormData] = useState({
@@ -33,6 +37,57 @@ const CreateSnippet = ({ isOpen, onClose, onSuccess }) => {
         status: 'draft',
         summary: ''
     });
+
+    // Load fork or edit data
+    useEffect(() => {
+        const loadData = async () => {
+            if (forkId) {
+                try {
+                    const forkDoc = await getDoc(doc(db, 'snippets', forkId));
+                    if (forkDoc.exists()) {
+                        const forkData = forkDoc.data();
+                        setIsFork(true);
+                        setOriginalSnippet(forkData);
+                        setFormData({
+                            title: forkData.title || '',
+                            description: forkData.description || '',
+                            code: forkData.code || '',
+                            language: forkData.language || 'javascript',
+                            tags: forkData.tags || [],
+                            status: 'draft',
+                            summary: forkData.summary || ''
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error loading fork data:', error);
+                }
+            } else if (editId) {
+                try {
+                    const editDoc = await getDoc(doc(db, 'snippets', editId));
+                    if (editDoc.exists()) {
+                        const editData = editDoc.data();
+                        setIsEdit(true);
+                        setOriginalSnippet(editData);
+                        setFormData({
+                            title: editData.title || '',
+                            description: editData.description || '',
+                            code: editData.code || '',
+                            language: editData.language || 'javascript',
+                            tags: editData.tags || [],
+                            status: editData.status || 'draft',
+                            summary: editData.summary || ''
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error loading edit data:', error);
+                }
+            }
+        };
+
+        if (isOpen && (forkId || editId)) {
+            loadData();
+        }
+    }, [isOpen, forkId, editId]);
 
     const modalVariants = {
         hidden: { opacity: 0 },
@@ -91,6 +146,32 @@ const CreateSnippet = ({ isOpen, onClose, onSuccess }) => {
         setError('');
 
         try {
+            if ((isFork && forkId) || (isEdit && editId)) {
+                // Update existing snippet (fork or edit)
+                const updateData = {
+                    title: formData.title.trim(),
+                    description: formData.description.trim(),
+                    code: formData.code,
+                    language: formData.language,
+                    tags: formData.tags,
+                    primaryTag: formData.tags[0] || null,
+                    status,
+                    updatedAt: serverTimestamp(),
+                    isDraft: status === 'draft',
+                    isPublic: status === 'public'
+                };
+
+                const docId = forkId || editId;
+                await updateDoc(doc(db, 'snippets', docId), updateData);
+
+                if (onSuccess) {
+                    onSuccess();
+                }
+                onClose();
+                return;
+            }
+
+            // Create new snippet
             const snippetData = {
                 title: formData.title.trim(),
                 description: formData.description.trim(),
@@ -174,9 +255,27 @@ const CreateSnippet = ({ isOpen, onClose, onSuccess }) => {
                 >
                     {/* Header */}
                     <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                            Create New Snippet
-                        </h2>
+                        <div>
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                                {isFork ? 'Edit Fork' : isEdit ? 'Edit Snippet' : 'Create New Snippet'}
+                            </h2>
+                            {isFork && originalSnippet && (
+                                <div className="flex items-center space-x-2 mt-2 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                                    <HiDuplicate className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                                    <span className="text-sm text-blue-700 dark:text-blue-300">
+                                        Forked from <span className="font-medium">@{originalSnippet.originalOwnerName}/{originalSnippet.originalTitle}</span>
+                                    </span>
+                                </div>
+                            )}
+                            {isEdit && originalSnippet && (
+                                <div className="flex items-center space-x-2 mt-2 p-2 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                                    <HiPencil className="w-4 h-4 text-green-600 dark:text-green-400" />
+                                    <span className="text-sm text-green-700 dark:text-green-300">
+                                        Editing <span className="font-medium">{originalSnippet.title}</span>
+                                    </span>
+                                </div>
+                            )}
+                        </div>
                         <button
                             onClick={onClose}
                             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"

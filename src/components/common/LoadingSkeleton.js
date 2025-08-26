@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 
-const LoadingSkeleton = ({ type = 'card', count = 6 }) => {
+const LoadingSkeleton = ({ type = 'card', count = 6, className = '' }) => {
   const shimmerVariants = {
     initial: { x: '-100%' },
     animate: { 
@@ -13,12 +13,12 @@ const LoadingSkeleton = ({ type = 'card', count = 6 }) => {
     }
   };
 
-  const SkeletonCard = ({ index }) => (
+  const SkeletonCard = ({ index, className: cardClassName = '' }) => (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
-      className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 overflow-hidden"
+      className={`bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 overflow-hidden h-full flex flex-col ${cardClassName}`}
     >
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
@@ -47,7 +47,7 @@ const LoadingSkeleton = ({ type = 'card', count = 6 }) => {
       </div>
 
       {/* Code Preview */}
-      <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 mb-4 border border-gray-200 dark:border-gray-700">
+      <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 mb-4 border border-gray-200 dark:border-gray-700 flex-1 flex flex-col">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center space-x-2">
             <div className="w-4 h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
@@ -82,7 +82,7 @@ const LoadingSkeleton = ({ type = 'card', count = 6 }) => {
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-shrink-0 mt-auto">
         <div className="flex items-center space-x-2">
           <div className="w-5 h-5 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
           <div className="w-20 h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
@@ -138,7 +138,7 @@ const LoadingSkeleton = ({ type = 'card', count = 6 }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {[...Array(count)].map((_, index) => (
-        <SkeletonCard key={index} index={index} />
+        <SkeletonCard key={index} index={index} className={className} />
       ))}
     </div>
   );

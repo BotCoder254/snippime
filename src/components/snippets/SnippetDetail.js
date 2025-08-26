@@ -16,6 +16,8 @@ import {
   HiCollection
 } from 'react-icons/hi';
 import { useAuth } from '../../hooks/useAuth';
+import { db } from '../../config/firebase';
+import { doc, onSnapshot, deleteDoc } from 'firebase/firestore';
 import VersionHistory from './VersionHistory';
 import VoteButtons from './VoteButtons';
 import ForkButton from './ForkButton';
@@ -28,6 +30,7 @@ const SnippetDetail = ({ snippet, isOpen, onClose, embedded = false }) => {
   const [showVersionHistory, setShowVersionHistory] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [showSaveToCollection, setShowSaveToCollection] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
   const { user } = useAuth();
 
   // Lock body scroll when modal is open
@@ -97,6 +100,29 @@ const SnippetDetail = ({ snippet, isOpen, onClose, embedded = false }) => {
     return colors[language?.toLowerCase()] || 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
   };
 
+  // Initialize likes count from snippet prop
+  useEffect(() => {
+    if (snippet) {
+      setLikesCount(snippet.score || 0);
+    }
+  }, [snippet]);
+
+  // Listen for real-time like count updates
+  useEffect(() => {
+    if (!snippet?.id) return;
+
+    const unsubscribe = onSnapshot(
+      doc(db, 'snippets', snippet.id),
+      (doc) => {
+        if (doc.exists()) {
+          setLikesCount(doc.data().score || 0);
+        }
+      }
+    );
+
+    return unsubscribe;
+  }, [snippet?.id]);
+
   const formatDate = (date) => {
     return new Date(date?.seconds * 1000 || date).toLocaleDateString('en-US', {
       month: 'long',
@@ -127,6 +153,26 @@ const SnippetDetail = ({ snippet, isOpen, onClose, embedded = false }) => {
 
   const handleSaveToCollection = () => {
     setShowSaveToCollection(true);
+  };
+
+  const handleEdit = () => {
+    // Navigate to edit page
+    window.location.href = `/create?edit=${snippet.id}`;
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm('Are you sure you want to delete this snippet? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      await deleteDoc(doc(db, 'snippets', snippet.id));
+      onClose();
+      // Optionally show success message
+    } catch (error) {
+      console.error('Error deleting snippet:', error);
+      alert('Failed to delete snippet. Please try again.');
+    }
   };
 
   if (!isOpen || !snippet) return null;
@@ -170,7 +216,9 @@ const SnippetDetail = ({ snippet, isOpen, onClose, embedded = false }) => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
+                  onClick={handleEdit}
                   className="p-2 text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                  title="Edit Snippet"
                 >
                   <HiPencil className="w-5 h-5" />
                 </motion.button>
@@ -178,7 +226,9 @@ const SnippetDetail = ({ snippet, isOpen, onClose, embedded = false }) => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
+                  onClick={handleDelete}
                   className="p-2 text-gray-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                  title="Delete Snippet"
                 >
                   <HiTrash className="w-5 h-5" />
                 </motion.button>
@@ -286,7 +336,7 @@ const SnippetDetail = ({ snippet, isOpen, onClose, embedded = false }) => {
                 
                 <div className="flex items-center space-x-1">
                   <HiHeart className="w-4 h-4" />
-                  <span>{snippet.likesCount || 0} likes</span>
+                  <span>{likesCount} likes</span>
                 </div>
               </div>
 
@@ -423,7 +473,9 @@ const SnippetDetail = ({ snippet, isOpen, onClose, embedded = false }) => {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
+                    onClick={handleEdit}
                     className="p-2 text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                    title="Edit Snippet"
                   >
                     <HiPencil className="w-5 h-5" />
                   </motion.button>
@@ -431,7 +483,9 @@ const SnippetDetail = ({ snippet, isOpen, onClose, embedded = false }) => {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
+                    onClick={handleDelete}
                     className="p-2 text-gray-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                    title="Delete Snippet"
                   >
                     <HiTrash className="w-5 h-5" />
                   </motion.button>
@@ -539,7 +593,7 @@ const SnippetDetail = ({ snippet, isOpen, onClose, embedded = false }) => {
                   
                   <div className="flex items-center space-x-1">
                     <HiHeart className="w-4 h-4" />
-                    <span>{snippet.likesCount || 0} likes</span>
+                    <span>{likesCount} likes</span>
                   </div>
                 </div>
 

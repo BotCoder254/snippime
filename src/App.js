@@ -5,6 +5,9 @@ import { useTheme } from './hooks/useTheme';
 import LandingPage from './pages/LandingPage';
 import Dashboard from './pages/Dashboard';
 import Collections from './pages/Collections';
+import Saved from './pages/Saved';
+import Liked from './pages/Liked';
+import Create from './pages/Create';
 import EmbedSnippet from './components/embed/EmbedSnippet';
 import EmbedDocs from './components/embed/EmbedDocs';
 import LoadingSkeleton from './components/common/LoadingSkeleton';
@@ -38,8 +41,9 @@ function AppContent() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/collections" element={<Collections />} />
             <Route path="/explore" element={<Dashboard />} />
-            <Route path="/saved" element={<Dashboard />} />
-            <Route path="/liked" element={<Dashboard />} />
+            <Route path="/saved" element={<Saved />} />
+            <Route path="/liked" element={<Liked />} />
+            <Route path="/create" element={<Create />} />
             <Route path="/profile" element={<Dashboard />} />
             <Route path="/settings" element={<Dashboard />} />
             <Route path="/embed-docs" element={<EmbedDocs />} />

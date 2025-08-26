@@ -82,13 +82,23 @@ const VoteButtons = ({ snippetId, initialScore = 0, initialVoteCounts = { up: 0,
     try {
       await runTransaction(db, async (transaction) => {
         const voteRef = doc(db, 'snippets', snippetId, 'votes', user.uid);
+        const topLevelVoteRef = doc(db, 'votes', `${user.uid}_${snippetId}`);
         const snippetRef = doc(db, 'snippets', snippetId);
 
-        // Update vote document
+        // Update vote document in subcollection
         if (newVote === 0) {
           transaction.delete(voteRef);
+          transaction.delete(topLevelVoteRef);
         } else {
           transaction.set(voteRef, {
+            value: newVote,
+            updatedAt: new Date()
+          });
+          // Also maintain top-level votes collection for easier querying
+          transaction.set(topLevelVoteRef, {
+            userId: user.uid,
+            snippetId: snippetId,
+            type: newVote === 1 ? 'up' : 'down',
             value: newVote,
             updatedAt: new Date()
           });

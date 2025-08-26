@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSearchParams } from 'react-router-dom';
 import {
   HiPlus,
   HiSearch,
@@ -29,9 +30,12 @@ import ThemeToggle from '../components/common/ThemeToggle';
 import FilterDrawer from '../components/common/FilterDrawer';
 
 const Dashboard = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedSnippet, setSelectedSnippet] = useState(null);
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [forkId, setForkId] = useState(null);
+  const [editId, setEditId] = useState(null);
   const [snippets, setSnippets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -68,6 +72,23 @@ const Dashboard = () => {
     'react', 'javascript', 'typescript', 'python', 'css', 'html',
     'node', 'api', 'database', 'authentication', 'utility', 'component'
   ];
+
+  // Handle fork and edit query parameters
+  useEffect(() => {
+    const fork = searchParams.get('fork');
+    const edit = searchParams.get('edit');
+    if (fork) {
+      setForkId(fork);
+      setCreateModalOpen(true);
+      // Clear the query parameter
+      setSearchParams({});
+    } else if (edit) {
+      setEditId(edit);
+      setCreateModalOpen(true);
+      // Clear the query parameter
+      setSearchParams({});
+    }
+  }, [searchParams, setSearchParams]);
 
   useEffect(() => {
     const unsubscribe = fetchSnippetsRealtime();
@@ -540,8 +561,14 @@ const Dashboard = () => {
 
       <CreateSnippet
         isOpen={createModalOpen}
-        onClose={() => setCreateModalOpen(false)}
+        onClose={() => {
+          setCreateModalOpen(false);
+          setForkId(null);
+          setEditId(null);
+        }}
         onSuccess={handleCreateSuccess}
+        forkId={forkId}
+        editId={editId}
       />
 
       {/* Mobile Filter Drawer */}
