@@ -7,15 +7,18 @@ import {
   HiCode,
   HiCalendar,
   HiTag,
-  HiDuplicate
+  HiDuplicate,
+  HiCollection
 } from 'react-icons/hi';
 import { getLanguageColor, formatDate } from '../../utils/helpers';
 import VoteButtons from './VoteButtons';
 import ForkButton from './ForkButton';
+import SaveToCollection from '../collections/SaveToCollection';
 
 const SnippetCard = ({ snippet, onClick, index = 0, highlighted }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [showSaveToCollection, setShowSaveToCollection] = useState(false);
 
   const cardVariants = {
     hidden: {
@@ -45,7 +48,7 @@ const SnippetCard = ({ snippet, onClick, index = 0, highlighted }) => {
 
   const handleSave = (e) => {
     e.stopPropagation();
-    setIsSaved(!isSaved);
+    setShowSaveToCollection(true);
   };
 
   return (
@@ -102,12 +105,10 @@ const SnippetCard = ({ snippet, onClick, index = 0, highlighted }) => {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={handleSave}
-            className={`p-2 rounded-lg transition-colors ${isSaved
-              ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
-              : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400'
-              }`}
+            className="p-2 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400"
+            title="Save to Collection"
           >
-            <HiBookmark className="w-4 h-4" />
+            <HiCollection className="w-4 h-4" />
           </motion.button>
 
           <motion.button
@@ -200,6 +201,13 @@ const SnippetCard = ({ snippet, onClick, index = 0, highlighted }) => {
           </div>
         </div>
       </div>
+
+      {/* Save to Collection Modal */}
+      <SaveToCollection
+        snippet={snippet}
+        isOpen={showSaveToCollection}
+        onClose={() => setShowSaveToCollection(false)}
+      />
     </motion.div>
   );
 };

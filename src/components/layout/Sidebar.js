@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link, useLocation } from 'react-router-dom';
 import { 
   HiHome, 
   HiCode, 
@@ -10,16 +11,19 @@ import {
   HiMenuAlt3,
   HiX,
   HiHeart,
-  HiBookmark
+  HiBookmark,
+  HiCollection
 } from 'react-icons/hi';
 import { useAuth } from '../../hooks/useAuth';
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
   const { user, logout } = useAuth();
+  const location = useLocation();
 
   const menuItems = [
     { icon: HiHome, label: 'Home', path: '/' },
     { icon: HiCode, label: 'Explore', path: '/explore' },
+    { icon: HiCollection, label: 'Collections', path: '/collections' },
     { icon: HiBookmark, label: 'Saved', path: '/saved' },
     { icon: HiHeart, label: 'Liked', path: '/liked' },
     { icon: HiUser, label: 'Profile', path: '/profile' },
@@ -123,30 +127,44 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
           {/* Navigation */}
           <nav className="flex-1 p-4 space-y-2">
-            {menuItems.map((item, index) => (
-              <motion.a
-                key={item.path}
-                href={item.path}
-                className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <item.icon className="w-5 h-5 text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400" />
-                <AnimatePresence>
-                  {isOpen && (
-                    <motion.span
-                      variants={itemVariants}
-                      initial="closed"
-                      animate="open"
-                      exit="closed"
-                      className="text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 font-medium"
-                    >
-                      {item.label}
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-              </motion.a>
-            ))}
+            {menuItems.map((item, index) => {
+              const isActive = location.pathname === item.path;
+              return (
+                <motion.div key={item.path}>
+                  <Link
+                    to={item.path}
+                    className={`flex items-center space-x-3 p-3 rounded-lg transition-colors group ${
+                      isActive 
+                        ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' 
+                        : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400'
+                    }`}
+                  >
+                    <item.icon className={`w-5 h-5 ${
+                      isActive 
+                        ? 'text-blue-600 dark:text-blue-400' 
+                        : 'text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400'
+                    }`} />
+                    <AnimatePresence>
+                      {isOpen && (
+                        <motion.span
+                          variants={itemVariants}
+                          initial="closed"
+                          animate="open"
+                          exit="closed"
+                          className={`font-medium ${
+                            isActive 
+                              ? 'text-blue-600 dark:text-blue-400' 
+                              : 'text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400'
+                          }`}
+                        >
+                          {item.label}
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </Link>
+                </motion.div>
+              );
+            })}
           </nav>
 
           {/* Create Button */}

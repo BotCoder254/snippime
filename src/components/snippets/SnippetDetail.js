@@ -12,17 +12,22 @@ import {
   HiPencil,
   HiTrash,
   HiClock,
-  HiDuplicate
+  HiDuplicate,
+  HiCollection
 } from 'react-icons/hi';
 import { useAuth } from '../../hooks/useAuth';
 import VersionHistory from './VersionHistory';
 import VoteButtons from './VoteButtons';
 import ForkButton from './ForkButton';
+import ShareModal from './ShareModal';
+import SaveToCollection from '../collections/SaveToCollection';
 const SnippetDetail = ({ snippet, isOpen, onClose, embedded = false }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showVersionHistory, setShowVersionHistory] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [showSaveToCollection, setShowSaveToCollection] = useState(false);
   const { user } = useAuth();
 
   const modalVariants = {
@@ -101,30 +106,12 @@ const SnippetDetail = ({ snippet, isOpen, onClose, embedded = false }) => {
     setIsLiked(!isLiked);
   };
 
-  const handleSave = () => {
-    setIsSaved(!isSaved);
+  const handleShare = () => {
+    setShowShareModal(true);
   };
 
-  const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: snippet.title,
-          text: snippet.description,
-          url: window.location.href
-        });
-      } catch (err) {
-        console.error('Error sharing:', err);
-      }
-    } else {
-      // Fallback to copying URL
-      try {
-        await navigator.clipboard.writeText(window.location.href);
-        // You could show a toast notification here
-      } catch (err) {
-        console.error('Failed to copy URL:', err);
-      }
-    }
+  const handleSaveToCollection = () => {
+    setShowSaveToCollection(true);
   };
 
   if (!isOpen || !snippet) return null;
@@ -318,15 +305,11 @@ const SnippetDetail = ({ snippet, isOpen, onClose, embedded = false }) => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={handleSave}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
-                    isSaved 
-                      ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400' 
-                      : 'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-                  }`}
+                  onClick={handleSaveToCollection}
+                  className="flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800"
                 >
-                  <HiBookmark className="w-4 h-4" />
-                  <span className="text-sm">{isSaved ? 'Saved' : 'Save'}</span>
+                  <HiCollection className="w-4 h-4" />
+                  <span className="text-sm">Save to Collection</span>
                 </motion.button>
                 
                 <motion.button
@@ -561,15 +544,11 @@ const SnippetDetail = ({ snippet, isOpen, onClose, embedded = false }) => {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={handleSave}
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
-                      isSaved 
-                        ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400' 
-                        : 'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-                    }`}
+                    onClick={handleSaveToCollection}
+                    className="flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800"
                   >
-                    <HiBookmark className="w-4 h-4" />
-                    <span className="text-sm">{isSaved ? 'Saved' : 'Save'}</span>
+                    <HiCollection className="w-4 h-4" />
+                    <span className="text-sm">Save</span>
                   </motion.button>
                   
                   <motion.button
@@ -620,14 +599,10 @@ const SnippetDetail = ({ snippet, isOpen, onClose, embedded = false }) => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={handleSave}
-                className={`p-3 rounded-lg transition-colors ${
-                  isSaved 
-                    ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400' 
-                    : 'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-                }`}
+                onClick={handleSaveToCollection}
+                className="p-3 rounded-lg transition-colors text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800"
               >
-                <HiBookmark className="w-6 h-6" />
+                <HiCollection className="w-6 h-6" />
               </motion.button>
             </div>
           </div>
@@ -642,6 +617,20 @@ const SnippetDetail = ({ snippet, isOpen, onClose, embedded = false }) => {
             setShowVersionHistory(false);
             // Optionally refresh the snippet data
           }}
+        />
+
+        {/* Share Modal */}
+        <ShareModal
+          snippet={snippet}
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
+        />
+
+        {/* Save to Collection Modal */}
+        <SaveToCollection
+          snippet={snippet}
+          isOpen={showSaveToCollection}
+          onClose={() => setShowSaveToCollection(false)}
         />
       </motion.div>
     </AnimatePresence>

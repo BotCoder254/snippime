@@ -77,60 +77,33 @@ const Dashboard = () => {
   const fetchSnippetsRealtime = () => {
     setLoading(true);
     try {
+      // Simple query without complex indexes - filter and sort on client side
       let q = query(
         collection(db, 'snippets'),
-        where('status', '==', 'public'),
-        limit(100)
+        limit(200) // Get more docs to filter client-side
       );
 
-      // Add language filter
-      if (selectedLanguage !== 'all') {
-        q = query(q, where('language', '==', selectedLanguage));
-      }
-
-      // Add tag filter (only one tag at a time for Firestore efficiency)
-      if (selectedTags.length > 0) {
-        q = query(q, where('tags', 'array-contains', selectedTags[0]));
-      }
-
-      // Add time filter
-      if (timeFilter !== 'all') {
-        const now = new Date();
-        let startDate;
-
-        switch (timeFilter) {
-          case 'today':
-            startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      // Only add orderBy if no other filters are applied to avoid index requirements
+      if (selectedLanguage === 'all' && selectedTags.length === 0 && timeFilter === 'all') {
+        switch (sortBy) {
+          case 'newest':
+            q = query(q, orderBy('createdAt', 'desc'));
             break;
-          case 'week':
-            startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          case 'top':
+            q = query(q, orderBy('score', 'desc'));
             break;
-          case 'month':
-            startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+          case 'trending':
+            q = query(q, orderBy('scoreHot', 'desc'));
             break;
+          case 'popular':
+            q = query(q, orderBy('viewsCount', 'desc'));
+            break;
+          default:
+            q = query(q, orderBy('createdAt', 'desc'));
         }
-
-        if (startDate) {
-          q = query(q, where('createdAt', '>=', startDate));
-        }
-      }
-
-      // Add sorting
-      switch (sortBy) {
-        case 'newest':
-          q = query(q, orderBy('createdAt', 'desc'));
-          break;
-        case 'top':
-          q = query(q, orderBy('score', 'desc'));
-          break;
-        case 'trending':
-          q = query(q, orderBy('scoreHot', 'desc'));
-          break;
-        case 'popular':
-          q = query(q, orderBy('viewsCount', 'desc'));
-          break;
-        default:
-          q = query(q, orderBy('createdAt', 'desc'));
+      } else {
+        // Use default ordering when filters are applied
+        q = query(q, orderBy('createdAt', 'desc'));
       }
 
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -138,6 +111,68 @@ const Dashboard = () => {
           id: doc.id,
           ...doc.data()
         }));
+
+        // Client-side filtering
+        snippetsData = snippetsData.filter(snippet => {
+          // Filter by status (public only)
+          if (snippet.status !== 'public' && !snippet.isPublic) return false;
+          
+          // Filter by language
+          if (selectedLanguage !== 'all' && snippet.language !== selectedLanguage) return false;
+          
+          // Filter by tags
+          if (selectedTags.length > 0) {
+            const hasTag = selectedTags.some(tag => 
+              snippet.tags && snippet.tags.includes(tag)
+            );
+            if (!hasTag) return false;
+          }
+          
+          // Filter by time
+          if (timeFilter !== 'all' && snippet.createdAt) {
+            const now = new Date();
+            const createdAt = snippet.createdAt.toDate ? snippet.createdAt.toDate() : new Date(snippet.createdAt);
+            let startDate;
+
+            switch (timeFilter) {
+              case 'today':
+                startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                break;
+              case 'week':
+                startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                break;
+              case 'month':
+                startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                break;
+            }
+
+            if (startDate && createdAt < startDate) return false;
+          }
+          
+          return true;
+        });
+
+        // Client-side sorting (if filters were applied)
+        if (selectedLanguage !== 'all' || selectedTags.length > 0 || timeFilter !== 'all') {
+          switch (sortBy) {
+            case 'newest':
+              snippetsData.sort((a, b) => {
+                const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+                const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+                return dateB - dateA;
+              });
+              break;
+            case 'top':
+              snippetsData.sort((a, b) => (b.score || 0) - (a.score || 0));
+              break;
+            case 'trending':
+              snippetsData.sort((a, b) => (b.scoreHot || 0) - (a.scoreHot || 0));
+              break;
+            case 'popular':
+              snippetsData.sort((a, b) => (b.viewsCount || 0) - (a.viewsCount || 0));
+              break;
+          }
+        }
 
         // Client-side filtering for multiple tags
         if (selectedTags.length > 1) {
