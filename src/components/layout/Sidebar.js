@@ -5,8 +5,6 @@ import {
   HiHome, 
   HiCode, 
   HiPlus, 
-  HiUser, 
-  HiCog, 
   HiLogout,
   HiMenuAlt3,
   HiX,
@@ -26,8 +24,6 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     { icon: HiCollection, label: 'Collections', path: '/collections' },
     { icon: HiBookmark, label: 'Saved', path: '/saved' },
     { icon: HiHeart, label: 'Liked', path: '/liked' },
-    { icon: HiUser, label: 'Profile', path: '/profile' },
-    { icon: HiCog, label: 'Settings', path: '/settings' },
   ];
 
   const sidebarVariants = {

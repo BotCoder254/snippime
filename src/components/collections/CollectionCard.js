@@ -138,12 +138,12 @@ const CollectionCard = ({ collection, onClick, onEdit, onDelete, index = 0 }) =>
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-1">
             <HiCollection className="w-4 h-4" />
-            <span>{collection.itemCount || 0} snippets</span>
+            <span>{collection.itemCount || 0}</span>
           </div>
           
           <div className="flex items-center space-x-1">
             <HiEye className="w-4 h-4" />
-            <span>{collection.viewsCount || 0} views</span>
+            <span>{collection.viewsCount || 0}</span>
           </div>
         </div>
 
