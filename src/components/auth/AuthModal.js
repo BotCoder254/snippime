@@ -118,7 +118,7 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'signin' }) => {
                   transition={{ delay: 0.2 }}
                   className="text-center"
                 >
-                  <div className="w-24 h-24 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-8 mx-auto backdrop-blur-sm">
+                  <div className="w-24 h-24 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-8 mx-auto backdrop-blur-sm cover">
                     <svg className="w-12 h-12" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0L19.2 12l-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/>
                     </svg>

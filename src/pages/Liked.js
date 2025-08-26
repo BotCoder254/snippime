@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  HiHeart, 
+import {
+  HiHeart,
   HiSearch,
   HiFilter,
   HiSortAscending
@@ -53,7 +53,7 @@ const Liked = () => {
       ),
       async (querySnapshot) => {
         const likedIds = querySnapshot.docs.map(doc => doc.data().snippetId);
-        
+
         if (likedIds.length === 0) {
           setLikedSnippets([]);
           setLoading(false);
@@ -63,7 +63,7 @@ const Liked = () => {
         // Fetch snippets in batches due to Firestore 'in' query limit of 10
         const batchSize = 10;
         const allSnippets = [];
-        
+
         for (let i = 0; i < likedIds.length; i += batchSize) {
           const batch = likedIds.slice(i, i + batchSize);
           try {
@@ -71,23 +71,23 @@ const Liked = () => {
               collection(db, 'snippets'),
               where('__name__', 'in', batch)
             );
-            
+
             const snapshot = await new Promise((resolve) => {
               const unsubscribeSnippets = onSnapshot(snippetsQuery, resolve);
               return unsubscribeSnippets;
             });
-            
+
             const batchSnippets = snapshot.docs.map(doc => ({
               id: doc.id,
               ...doc.data()
             }));
-            
+
             allSnippets.push(...batchSnippets);
           } catch (error) {
             console.error('Error fetching batch:', error);
           }
         }
-        
+
         // Client-side sorting
         allSnippets.sort((a, b) => {
           const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt || 0);
@@ -161,7 +161,7 @@ const Liked = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
       {/* Sidebar */}
       <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
-      
+
       {/* Main Content */}
       <div className="flex-1 lg:ml-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -177,7 +177,7 @@ const Liked = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               </button>
-              
+
               <div>
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
                   Liked Snippets
@@ -240,7 +240,7 @@ const Liked = () => {
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {[...Array(8)].map((_, i) => (
-                <LoadingSkeleton key={i} className="h-full" />
+                <LoadingSkeleton key={i} className="min-h-[400px]" />
               ))}
             </div>
           ) : filteredAndSortedSnippets.length === 0 ? (

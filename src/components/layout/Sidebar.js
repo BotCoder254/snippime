@@ -36,7 +36,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             }
         },
         closed: {
-            width: '4rem',
+            width: '5rem',
             transition: {
                 type: 'spring',
                 stiffness: 300,
@@ -89,7 +89,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             >
                 <div className="flex flex-col h-full">
                     {/* Header */}
-                    <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+                    <div className={`flex items-center ${isOpen ? 'justify-between' : 'justify-center'} p-4 border-b border-gray-200 dark:border-gray-700`}>
                         <AnimatePresence>
                             {isOpen && (
                                 <motion.div
@@ -114,27 +114,28 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                             className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                         >
                             {isOpen ? (
-                                <HiX className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                                <HiX className="w-6 h-6 text-gray-600 dark:text-gray-400" />
                             ) : (
-                                <HiMenuAlt3 className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                                <HiMenuAlt3 className="w-6 h-6 text-gray-600 dark:text-gray-400" />
                             )}
                         </button>
                     </div>
 
                     {/* Navigation */}
-                    <nav className="flex-1 p-4 space-y-2">
+                    <nav className="flex-1 p-2 space-y-2">
                         {menuItems.map((item, index) => {
                             const isActive = location.pathname === item.path;
                             return (
                                 <motion.div key={item.path}>
                                     <Link
                                         to={item.path}
-                                        className={`flex items-center space-x-3 p-3 rounded-lg transition-colors group ${isActive
+                                        className={`flex items-center ${isOpen ? 'space-x-3 p-3' : 'justify-center p-3'} rounded-lg transition-colors group relative ${isActive
                                             ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
                                             : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400'
                                             }`}
+                                        title={!isOpen ? item.label : ''}
                                     >
-                                        <item.icon className={`w-5 h-5 ${isActive
+                                        <item.icon className={`${isOpen ? 'w-6 h-6' : 'w-7 h-7'} ${isActive
                                             ? 'text-blue-600 dark:text-blue-400'
                                             : 'text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400'
                                             }`} />
@@ -154,6 +155,13 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                                                 </motion.span>
                                             )}
                                         </AnimatePresence>
+                                        
+                                        {/* Tooltip for collapsed state */}
+                                        {!isOpen && (
+                                            <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 pointer-events-none">
+                                                {item.label}
+                                            </div>
+                                        )}
                                     </Link>
                                 </motion.div>
                             );
@@ -161,13 +169,14 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                     </nav>
 
                     {/* Create Button */}
-                    <div className="p-4">
+                    <div className="p-2">
                         <motion.button
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
-                            className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white p-3 rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all shadow-lg"
+                            className={`w-full flex items-center ${isOpen ? 'space-x-2 p-3' : 'justify-center p-3'} bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all shadow-lg relative group`}
+                            title={!isOpen ? 'New Snippet' : ''}
                         >
-                            <HiPlus className="w-5 h-5" />
+                            <HiPlus className={`${isOpen ? 'w-5 h-5' : 'w-6 h-6'}`} />
                             <AnimatePresence>
                                 {isOpen && (
                                     <motion.span
@@ -181,20 +190,27 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                                     </motion.span>
                                 )}
                             </AnimatePresence>
+                            
+                            {/* Tooltip for collapsed state */}
+                            {!isOpen && (
+                                <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 pointer-events-none">
+                                    New Snippet
+                                </div>
+                            )}
                         </motion.button>
                     </div>
 
                     {/* User Profile */}
                     {user && (
-                        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-                            <div className="flex items-center space-x-3">
-                                <img
-                                    src={user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName || user.email}&background=6366f1&color=fff`}
-                                    alt={user.displayName || user.email}
-                                    className="w-10 h-10 rounded-full"
-                                />
-                                <AnimatePresence>
-                                    {isOpen && (
+                        <div className="p-2 border-t border-gray-200 dark:border-gray-700">
+                            {isOpen ? (
+                                <div className="flex items-center space-x-3 p-2">
+                                    <img
+                                        src={user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName || user.email}&background=6366f1&color=fff`}
+                                        alt={user.displayName || user.email}
+                                        className="w-10 h-10 rounded-full"
+                                    />
+                                    <AnimatePresence>
                                         <motion.div
                                             variants={itemVariants}
                                             initial="closed"
@@ -206,17 +222,42 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                                                 {user.displayName || user.email}
                                             </p>
                                         </motion.div>
-                                    )}
-                                </AnimatePresence>
-                                {/* Logout button - always visible */}
-                                <button
-                                    onClick={logout}
-                                    className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
-                                    title="Logout"
-                                >
-                                    <HiLogout className="w-4 h-4" />
-                                </button>
-                            </div>
+                                    </AnimatePresence>
+                                    <button
+                                        onClick={logout}
+                                        className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                                        title="Logout"
+                                    >
+                                        <HiLogout className="w-5 h-5" />
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="space-y-2">
+                                    {/* User Avatar - Collapsed */}
+                                    <div className="flex justify-center">
+                                        <img
+                                            src={user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName || user.email}&background=6366f1&color=fff`}
+                                            alt={user.displayName || user.email}
+                                            className="w-10 h-10 rounded-full"
+                                            title={user.displayName || user.email}
+                                        />
+                                    </div>
+                                    {/* Logout Button - Collapsed */}
+                                    <div className="flex justify-center">
+                                        <button
+                                            onClick={logout}
+                                            className="p-3 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors relative group"
+                                            title="Logout"
+                                        >
+                                            <HiLogout className="w-6 h-6" />
+                                            {/* Tooltip for collapsed state */}
+                                            <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 pointer-events-none">
+                                                Logout
+                                            </div>
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>

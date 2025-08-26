@@ -144,7 +144,7 @@ const SnippetCard = ({ snippet, onClick, index = 0, highlighted, showActions = t
         transition: { type: 'spring', stiffness: 300, damping: 30 }
       }}
       onClick={() => onClick(snippet)}
-      className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 cursor-pointer hover:shadow-lg dark:hover:shadow-2xl transition-all duration-200 group overflow-hidden h-full flex flex-col"
+      className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 cursor-pointer hover:shadow-lg dark:hover:shadow-2xl transition-all duration-200 group overflow-hidden h-full flex flex-col min-h-[400px]"
     >
       {/* Header */}
       <div className="flex items-start justify-between mb-4 flex-shrink-0">
@@ -239,7 +239,7 @@ const SnippetCard = ({ snippet, onClick, index = 0, highlighted, showActions = t
       </div>
 
       {/* Code Preview */}
-      <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 mb-4 border border-gray-200 dark:border-gray-700 flex-1 flex flex-col">
+      <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 mb-4 border border-gray-200 dark:border-gray-700 flex-1 flex flex-col min-h-[120px]">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center space-x-2">
             <HiCode className="w-4 h-4 text-gray-500 dark:text-gray-400" />
@@ -254,16 +254,17 @@ const SnippetCard = ({ snippet, onClick, index = 0, highlighted, showActions = t
           </div>
         </div>
 
-        <pre className="text-sm text-gray-700 dark:text-gray-300 font-mono overflow-hidden">
-          <code className="line-clamp-4">
+        <pre className="text-sm text-gray-700 dark:text-gray-300 font-mono overflow-hidden flex-1 max-h-24">
+          <code className="line-clamp-4 block">
             {snippet.code}
           </code>
         </pre>
       </div>
 
       {/* Tags */}
-      {snippet.tags && snippet.tags.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-4">
+      <div className="flex flex-wrap gap-2 mb-4 min-h-[32px]">
+        {snippet.tags && snippet.tags.length > 0 && (
+          <>
           {snippet.tags.slice(0, 3).map((tag, index) => (
             <span
               key={index}
@@ -278,8 +279,9 @@ const SnippetCard = ({ snippet, onClick, index = 0, highlighted, showActions = t
               +{snippet.tags.length - 3} more
             </span>
           )}
-        </div>
-      )}
+          </>
+        )}
+      </div>
 
       {/* Footer */}
       <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 flex-shrink-0 mt-auto">
