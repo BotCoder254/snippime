@@ -235,24 +235,23 @@ const SnippetDetail = ({ snippet, isOpen, onClose, embedded = false }) => {
                   </span>
                 </div>
                 
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleCopy}
-                  className="flex items-center space-x-2 px-3 py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                >
-                  {copied ? (
-                    <>
+                <div className="relative group">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleCopy}
+                    className="p-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    {copied ? (
                       <HiCheck className="w-4 h-4 text-green-600" />
-                      <span className="text-sm text-green-600">Copied!</span>
-                    </>
-                  ) : (
-                    <>
+                    ) : (
                       <HiClipboard className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                      <span className="text-sm text-gray-600 dark:text-gray-400">Copy</span>
-                    </>
-                  )}
-                </motion.button>
+                    )}
+                  </motion.button>
+                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                    {copied ? 'Copied!' : 'Copy Code'}
+                  </div>
+                </div>
               </div>
               
               <div className="p-4">
@@ -286,31 +285,44 @@ const SnippetDetail = ({ snippet, isOpen, onClose, embedded = false }) => {
                 />
 
                 {/* Fork Button */}
-                <ForkButton 
-                  snippet={snippet}
-                  size="md"
-                  showLabel={true}
-                />
+                <div className="relative group">
+                  <ForkButton 
+                    snippet={snippet}
+                    size="md"
+                    showLabel={false}
+                  />
+                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                    Fork Snippet
+                  </div>
+                </div>
 
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleShare}
-                  className="flex items-center space-x-2 px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-                >
-                  <HiShare className="w-4 h-4" />
-                  <span className="text-sm">Share</span>
-                </motion.button>
+                <div className="relative group">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleShare}
+                    className="p-3 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                  >
+                    <HiShare className="w-4 h-4" />
+                  </motion.button>
+                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                    Share Snippet
+                  </div>
+                </div>
                 
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleSaveToCollection}
-                  className="flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800"
-                >
-                  <HiCollection className="w-4 h-4" />
-                  <span className="text-sm">Save to Collection</span>
-                </motion.button>
+                <div className="relative group">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleSaveToCollection}
+                    className="p-3 rounded-lg transition-colors text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  >
+                    <HiCollection className="w-4 h-4" />
+                  </motion.button>
+                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                    Save to Collection
+                  </div>
+                </div>
                 
                 <motion.button
                   whileHover={{ scale: 1.05 }}
@@ -474,24 +486,23 @@ const SnippetDetail = ({ snippet, isOpen, onClose, embedded = false }) => {
                     </span>
                   </div>
                   
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={handleCopy}
-                    className="flex items-center space-x-2 px-3 py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                  >
-                    {copied ? (
-                      <>
+                  <div className="relative group">
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={handleCopy}
+                      className="p-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    >
+                      {copied ? (
                         <HiCheck className="w-4 h-4 text-green-600" />
-                        <span className="text-sm text-green-600">Copied!</span>
-                      </>
-                    ) : (
-                      <>
+                      ) : (
                         <HiClipboard className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Copy</span>
-                      </>
-                    )}
-                  </motion.button>
+                      )}
+                    </motion.button>
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                      {copied ? 'Copied!' : 'Copy Code'}
+                    </div>
+                  </div>
                 </div>
                 
                 <div className="p-4">
@@ -525,31 +536,44 @@ const SnippetDetail = ({ snippet, isOpen, onClose, embedded = false }) => {
                   />
 
                   {/* Mobile Fork Button */}
-                  <ForkButton 
-                    snippet={snippet}
-                    size="sm"
-                    showLabel={false}
-                  />
+                  <div className="relative group">
+                    <ForkButton 
+                      snippet={snippet}
+                      size="sm"
+                      showLabel={false}
+                    />
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                      Fork
+                    </div>
+                  </div>
 
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={handleShare}
-                    className="flex items-center space-x-2 px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-                  >
-                    <HiShare className="w-4 h-4" />
-                    <span className="text-sm">Share</span>
-                  </motion.button>
+                  <div className="relative group">
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={handleShare}
+                      className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                    >
+                      <HiShare className="w-4 h-4" />
+                    </motion.button>
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                      Share
+                    </div>
+                  </div>
                   
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={handleSaveToCollection}
-                    className="flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800"
-                  >
-                    <HiCollection className="w-4 h-4" />
-                    <span className="text-sm">Save</span>
-                  </motion.button>
+                  <div className="relative group">
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={handleSaveToCollection}
+                      className="p-2 rounded-lg transition-colors text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    >
+                      <HiCollection className="w-4 h-4" />
+                    </motion.button>
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                      Save
+                    </div>
+                  </div>
                   
                   <motion.button
                     whileHover={{ scale: 1.05 }}
@@ -581,29 +605,44 @@ const SnippetDetail = ({ snippet, isOpen, onClose, embedded = false }) => {
             />
             
             <div className="flex items-center space-x-3">
-              <ForkButton 
-                snippet={snippet}
-                size="lg"
-                showLabel={false}
-              />
+              <div className="relative group">
+                <ForkButton 
+                  snippet={snippet}
+                  size="lg"
+                  showLabel={false}
+                />
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                  Fork
+                </div>
+              </div>
               
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={handleShare}
-                className="p-3 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-              >
-                <HiShare className="w-6 h-6" />
-              </motion.button>
+              <div className="relative group">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleShare}
+                  className="p-3 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                >
+                  <HiShare className="w-6 h-6" />
+                </motion.button>
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                  Share
+                </div>
+              </div>
               
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={handleSaveToCollection}
-                className="p-3 rounded-lg transition-colors text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800"
-              >
-                <HiCollection className="w-6 h-6" />
-              </motion.button>
+              <div className="relative group">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleSaveToCollection}
+                  className="p-3 rounded-lg transition-colors text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                >
+                  <HiCollection className="w-6 h-6" />
+                </motion.button>
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                  Save to Collection
+                </div>
+              </div>
             </div>
           </div>
         </div>

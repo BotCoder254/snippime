@@ -9,11 +9,12 @@ import {
 } from 'react-icons/hi';
 import { useAuth } from '../hooks/useAuth';
 import { db } from '../config/firebase';
-import { collection, query, where, onSnapshot, orderBy, deleteDoc, doc } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 import CollectionCard from '../components/collections/CollectionCard';
 import CreateCollection from '../components/collections/CreateCollection';
 import LoadingSkeleton from '../components/common/LoadingSkeleton';
 import EmptyState from '../components/common/EmptyState';
+import Sidebar from '../components/layout/Sidebar';
 
 const Collections = () => {
   const { user } = useAuth();
@@ -24,6 +25,7 @@ const Collections = () => {
   const [filterBy, setFilterBy] = useState('all');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingCollection, setEditingCollection] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const sortOptions = [
     { value: 'newest', label: 'Newest First' },
@@ -44,14 +46,21 @@ const Collections = () => {
     const unsubscribe = onSnapshot(
       query(
         collection(db, 'collections'),
-        where('ownerId', '==', user.uid),
-        orderBy('createdAt', 'desc')
+        where('ownerId', '==', user.uid)
       ),
       (querySnapshot) => {
-        const collectionsData = querySnapshot.docs.map(doc => ({
+        let collectionsData = querySnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         }));
+        
+        // Client-side sorting to avoid index requirement
+        collectionsData.sort((a, b) => {
+          const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt || 0);
+          const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt || 0);
+          return dateB - dateA;
+        });
+        
         setCollections(collectionsData);
         setLoading(false);
       },
@@ -149,17 +158,34 @@ const Collections = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
+      {/* Sidebar */}
+      <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
+      
+      {/* Main Content */}
+      <div className="flex-1 lg:ml-0">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              My Collections
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              Organize your snippets into collections
-            </p>
+          <div className="flex items-center space-x-4">
+            {/* Mobile menu button */}
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="lg:hidden p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+            
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                My Collections
+              </h1>
+              <p className="text-gray-600 dark:text-gray-400">
+                Organize your snippets into collections
+              </p>
+            </div>
           </div>
           
           <motion.button
@@ -286,6 +312,7 @@ const Collections = () => {
         onSuccess={editingCollection ? handleUpdateCollection : handleCreateCollection}
         editCollection={editingCollection}
       />
+      </div>
     </div>
   );
 };

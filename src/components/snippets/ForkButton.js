@@ -34,26 +34,27 @@ const ForkButton = ({ snippet, onFork, size = 'md', showLabel = true }) => {
     try {
       // Create forked snippet
       const forkedSnippet = {
-        title: `${snippet.title} (Fork)`,
-        description: snippet.description,
-        code: snippet.code,
-        language: snippet.language,
+        title: `${snippet.title || 'Untitled'} (Fork)`,
+        description: snippet.description || '',
+        code: snippet.code || '',
+        language: snippet.language || 'text',
         tags: snippet.tags || [],
         isPublic: false, // Start as draft
         isDraft: true,
         forkOf: snippet.id,
-        originalOwnerId: snippet.userId,
-        originalOwnerName: snippet.userName || 'Unknown',
-        originalTitle: snippet.title,
+        originalOwnerId: snippet.userId || snippet.author?.uid || snippet.ownerId || 'unknown',
+        originalOwnerName: snippet.userName || snippet.author?.displayName || snippet.ownerName || 'Unknown',
+        originalTitle: snippet.title || 'Untitled',
         userId: user.uid,
-        userName: user.displayName || user.email,
-        userAvatar: user.photoURL,
+        userName: user.displayName || user.email || 'Anonymous',
+        userAvatar: user.photoURL || null,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
         views: 0,
         score: 0,
         voteCounts: { up: 0, down: 0 },
-        forkCount: 0
+        forkCount: 0,
+        status: 'draft'
       };
 
       const docRef = await addDoc(collection(db, 'snippets'), forkedSnippet);

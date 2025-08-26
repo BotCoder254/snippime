@@ -34,8 +34,8 @@ const ShareModal = ({ snippet, isOpen, onClose }) => {
     exit: { scale: 0.95, opacity: 0 }
   };
 
-  const snippetUrl = `${window.location.origin}/snippet/${snippet?.id}`;
-  const embedUrl = `${window.location.origin}/embed/${snippet?.id}`;
+  const snippetUrl = snippet?.id ? `${window.location.origin}/snippet/${snippet.id}` : window.location.href;
+  const embedUrl = snippet?.id ? `${window.location.origin}/embed/${snippet.id}` : '';
   
   const embedSizes = {
     small: { width: 400, height: 300 },
