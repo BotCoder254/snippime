@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   HiX, 
@@ -30,6 +30,19 @@ const SnippetDetail = ({ snippet, isOpen, onClose, embedded = false }) => {
   const [showSaveToCollection, setShowSaveToCollection] = useState(false);
   const { user } = useAuth();
 
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
   const modalVariants = {
     hidden: { opacity: 0 },
     visible: { 
@@ -47,9 +60,10 @@ const SnippetDetail = ({ snippet, isOpen, onClose, embedded = false }) => {
   };
 
   const contentVariants = {
-    hidden: { x: '100%' },
+    hidden: { scale: 0.95, opacity: 0 },
     visible: { 
-      x: 0,
+      scale: 1,
+      opacity: 1,
       transition: {
         type: 'spring',
         stiffness: 300,
@@ -57,7 +71,8 @@ const SnippetDetail = ({ snippet, isOpen, onClose, embedded = false }) => {
       }
     },
     exit: { 
-      x: '100%',
+      scale: 0.95,
+      opacity: 0,
       transition: {
         type: 'spring',
         stiffness: 300,
@@ -363,14 +378,16 @@ const SnippetDetail = ({ snippet, isOpen, onClose, embedded = false }) => {
         initial="hidden"
         animate="visible"
         exit="exit"
-        className="fixed inset-0 bg-black bg-opacity-50 z-50 flex lg:hidden"
+        className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+        onClick={onClose}
       >
         <motion.div
           variants={contentVariants}
           initial="hidden"
           animate="visible"
           exit="exit"
-          className="ml-auto w-full max-w-2xl h-full bg-white dark:bg-gray-900 shadow-2xl overflow-hidden flex flex-col"
+          className="w-full max-w-4xl max-h-[95vh] bg-white dark:bg-gray-900 shadow-2xl rounded-xl overflow-hidden flex flex-col"
+          onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 sticky top-0 z-10">

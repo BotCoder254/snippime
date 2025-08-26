@@ -60,7 +60,7 @@ const CollectionCard = ({ collection, onClick, onEdit, onDelete, index = 0 }) =>
         transition: { type: 'spring', stiffness: 300, damping: 30 }
       }}
       onClick={() => onClick(collection)}
-      className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 cursor-pointer hover:shadow-lg dark:hover:shadow-2xl transition-all duration-200 group relative"
+      className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 cursor-pointer hover:shadow-lg dark:hover:shadow-2xl transition-all duration-200 group relative overflow-hidden"
     >
       {/* Cover Image or Placeholder */}
       <div className="aspect-video bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg mb-4 flex items-center justify-center relative overflow-hidden">
@@ -107,22 +107,28 @@ const CollectionCard = ({ collection, onClick, onEdit, onDelete, index = 0 }) =>
           </button>
 
           {showMenu && (
-            <div className="absolute right-0 top-8 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10 min-w-[120px]">
-              <button
-                onClick={handleEdit}
-                className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-t-lg"
-              >
-                <HiPencil className="w-4 h-4" />
-                <span>Edit</span>
-              </button>
-              <button
-                onClick={handleDelete}
-                className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-b-lg"
-              >
-                <HiTrash className="w-4 h-4" />
-                <span>Delete</span>
-              </button>
-            </div>
+            <>
+              <div 
+                className="fixed inset-0 z-10" 
+                onClick={() => setShowMenu(false)}
+              />
+              <div className="absolute right-0 top-8 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-20 min-w-[120px]">
+                <button
+                  onClick={handleEdit}
+                  className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-t-lg"
+                >
+                  <HiPencil className="w-4 h-4" />
+                  <span>Edit</span>
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-b-lg"
+                >
+                  <HiTrash className="w-4 h-4" />
+                  <span>Delete</span>
+                </button>
+              </div>
+            </>
           )}
         </div>
       </div>

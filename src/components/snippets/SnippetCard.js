@@ -61,7 +61,7 @@ const SnippetCard = ({ snippet, onClick, index = 0, highlighted }) => {
         transition: { type: 'spring', stiffness: 300, damping: 30 }
       }}
       onClick={() => onClick(snippet)}
-      className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 cursor-pointer hover:shadow-lg dark:hover:shadow-2xl transition-all duration-200 group"
+      className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 cursor-pointer hover:shadow-lg dark:hover:shadow-2xl transition-all duration-200 group overflow-hidden"
     >
       {/* Header */}
       <div className="flex items-start justify-between mb-4">

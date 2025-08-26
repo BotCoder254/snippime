@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   HiX, 
@@ -13,6 +13,19 @@ import {
 const ShareModal = ({ snippet, isOpen, onClose }) => {
   const [copied, setCopied] = useState('');
   const [embedSize, setEmbedSize] = useState('medium');
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
 
   const modalVariants = {
     hidden: { opacity: 0 },
@@ -72,42 +85,49 @@ const ShareModal = ({ snippet, isOpen, onClose }) => {
   };
 
   const shareOnSocial = (platform) => {
-    const text = `Check out this ${snippet?.language} code snippet: ${snippet?.title}`;
-    const url = snippetUrl;
-    const hashtags = snippet?.tags ? snippet.tags.slice(0, 3).join(',') : 'coding,programming';
-    
-    let shareUrl = '';
-    
-    switch (platform) {
-      case 'twitter':
-        shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}&hashtags=${encodeURIComponent(hashtags)}`;
-        break;
-      case 'linkedin':
-        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
-        break;
-      case 'facebook':
-        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`;
-        break;
-      case 'reddit':
-        shareUrl = `https://reddit.com/submit?url=${encodeURIComponent(url)}&title=${encodeURIComponent(text)}`;
-        break;
-      case 'hackernews':
-        shareUrl = `https://news.ycombinator.com/submitlink?u=${encodeURIComponent(url)}&t=${encodeURIComponent(text)}`;
-        break;
-      case 'dev':
-        shareUrl = `https://dev.to/new?prefill=---%0Atitle: ${encodeURIComponent(snippet?.title)}%0Apublished: false%0Atags: ${encodeURIComponent(hashtags)}%0A---%0A%0ACheck out this code snippet: ${encodeURIComponent(url)}`;
-        break;
-    }
-    
-    if (shareUrl) {
-      window.open(shareUrl, '_blank', 'width=600,height=400');
+    try {
+      const text = `Check out this ${snippet?.language || 'code'} snippet: ${snippet?.title || 'Untitled'}`;
+      const url = snippetUrl;
+      const hashtags = snippet?.tags && snippet.tags.length > 0 ? snippet.tags.slice(0, 3).join(',') : 'coding,programming';
+      
+      let shareUrl = '';
+      
+      switch (platform) {
+        case 'twitter':
+          shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}&hashtags=${encodeURIComponent(hashtags)}`;
+          break;
+        case 'linkedin':
+          shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+          break;
+        case 'facebook':
+          shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`;
+          break;
+        case 'reddit':
+          shareUrl = `https://reddit.com/submit?url=${encodeURIComponent(url)}&title=${encodeURIComponent(text)}`;
+          break;
+        case 'hackernews':
+          shareUrl = `https://news.ycombinator.com/submitlink?u=${encodeURIComponent(url)}&t=${encodeURIComponent(text)}`;
+          break;
+        case 'dev':
+          shareUrl = `https://dev.to/new?prefill=---%0Atitle: ${encodeURIComponent(snippet?.title || 'Code Snippet')}%0Apublished: false%0Atags: ${encodeURIComponent(hashtags)}%0A---%0A%0ACheck out this code snippet: ${encodeURIComponent(url)}`;
+          break;
+        default:
+          console.warn('Unknown platform:', platform);
+          return;
+      }
+      
+      if (shareUrl) {
+        window.open(shareUrl, '_blank', 'width=600,height=400');
+      }
+    } catch (error) {
+      console.error('Error sharing to social platform:', error);
     }
   };
 
   if (!isOpen || !snippet) return null;
 
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       <motion.div
         variants={modalVariants}
         initial="hidden"
